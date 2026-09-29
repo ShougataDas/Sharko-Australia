@@ -32,6 +32,8 @@ Usage:
   python 09_train_models.py --species tiger whale    # pick species (short or scientific names)
   python 09_train_models.py --all                    # every species with >= 300 records
   python 09_train_models.py --trials 80              # more Optuna tuning (slower, maybe better)
+  python 09_train_models.py --mode seasonal --species tiger bull white any
+                                                     # long-range models on typical conditions
 """
 import argparse
 import os
@@ -59,9 +61,10 @@ from features import FEATURES, FEATURE_LABELS
 warnings.filterwarnings("ignore", category=UserWarning)
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
+MODE = "daily"                    # "daily" = real conditions of the day; "seasonal" = typical conditions
 MODEL_DIR = os.path.join(BASE_DIR, "models")
 PLOT_DIR = os.path.join(MODEL_DIR, "plots")
-os.makedirs(PLOT_DIR, exist_ok=True)
+DATASETS = {"daily": "model_dataset.csv.gz", "seasonal": "model_dataset_seasonal.csv.gz"}
 
 SPECIES = {
     "tiger": "Galeocerdo cuvier",
@@ -244,6 +247,8 @@ def explain(name, title, model, model_name, X, y):
 # ---------------------------------------------------------------------------
 def train_species(name, scientific, data, n_trials):
     title = "All sharks" if scientific == "ANY" else f"{scientific} ({name})"
+    if MODE == "seasonal":
+        title += " - seasonal"
     pres = data[data["presence"] == 1]
     if scientific != "ANY":
         pres = pres[pres["species"] == scientific]
@@ -298,7 +303,7 @@ def train_species(name, scientific, data, n_trials):
 
     joblib.dump({
         "model": final, "model_name": best["model"], "features": FEATURES,
-        "species": scientific, "short_name": name, "title": title,
+        "species": scientific, "short_name": name, "title": title, "mode": MODE,
         "threshold": float(threshold), "metrics": best,
         "lgbm_params": best_params, "importance": importance.to_dict(),
         "n_presences": len(pres), "n_background": int((y == 0).sum()),
@@ -332,9 +337,17 @@ if __name__ == "__main__":
                     help="short names (" + ", ".join(SPECIES) + ") or scientific names")
     ap.add_argument("--all", action="store_true", help=f"every species with >= {MIN_PRESENCES} records")
     ap.add_argument("--trials", type=int, default=40, help="Optuna trials per species")
+    ap.add_argument("--mode", choices=list(DATASETS), default="daily",
+                    help="daily: real conditions (models/); seasonal: typical conditions for "
+                         "long-range dates (models/seasonal/, needs 13_build_seasonal_dataset.py)")
     args = ap.parse_args()
 
-    data = pd.read_csv(os.path.join(DATA_DIR, "model_dataset.csv.gz"), parse_dates=["date"],
+    MODE = args.mode
+    if MODE == "seasonal":
+        MODEL_DIR = os.path.join(BASE_DIR, "models", "seasonal")
+        PLOT_DIR = os.path.join(MODEL_DIR, "plots")
+    os.makedirs(PLOT_DIR, exist_ok=True)
+    data = pd.read_csv(os.path.join(DATA_DIR, DATASETS[MODE]), parse_dates=["date"],
                        low_memory=False)
     if args.all:
         counts = data[data["presence"] == 1]["species"].value_counts()

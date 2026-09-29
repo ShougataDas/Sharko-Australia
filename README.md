@@ -24,19 +24,52 @@ python 09_train_models.py               # tiger, bull, white: GLM vs RandomFores
 python 09_train_models.py --species any # all-sharks model
 python 10_predict_map.py --date 2026-01-15   # habitat maps -> maps/
 python 11_test_models.py                # integrity, biology and unseen-region tests -> models/test_report.md
+# --- future-date prediction ---
+python 12_build_climatology.py          # typical conditions per place + week -> data/climatology/ (~8 min)
+python 13_build_seasonal_dataset.py     # training data on typical conditions
+python 09_train_models.py --mode seasonal --species tiger bull white any   # long-range models -> models/seasonal/
+python 14_backtest_future.py            # honest future test: train to 2024, predict 2025-26 -> models/backtest_report.md
+python 15_get_forecast.py               # Copernicus ocean forecast, next ~9 days (run daily)
+python 16_test_pipeline.py              # end-to-end test of everything -> models/pipeline_test_report.md
+python predictor.py -33.9 151.3 2030-01-15   # shark presence likelihood for any position + date
 ```
 
 All scripts can be re-run safely.
 Typical run times: OBIS ~1 min, GBIF ~15–20 min (slow API), QLD ~1 min, merge seconds,
 bathymetry ~1 min, ocean data depends on size (run `--dry-run` first).
 
+## Predicting a future date
+
+`predictor.py` answers "how likely is a shark at this position on this date?" for any date.
+The 10 model inputs are built according to how far ahead the date is:
+
+| Mode | When | Ocean inputs from | Model |
+|---|---|---|---|
+| observed | past date, archive on disk | real satellite data of that day | daily |
+| forecast | next ~9 days | Copernicus ocean forecast, bias-corrected to satellite | daily |
+| outlook | up to 90 days after the last known day | typical conditions + today's unusual part, fading with time | seasonal |
+| typical | further ahead (e.g. 2030) | typical conditions for that place and week (2020-2026) | seasonal |
+
+Depth, distance to coast and season are always known exactly. Long-range answers include a
+range (cooler / warmer year). Each species is only predicted within 500 km of where it has
+been recorded (2020-2026).
+
+```python
+from predictor import SharkoPredictor
+p = SharkoPredictor()
+p.predict_point(-33.9, 151.3, "2030-01-15")   # JSON-ready dict per species
+p.predict_grid("2030-01-15")                  # whole-Australia map (0.1 deg)
+```
+
 ## What's in this repo
 
 | Folder | Contents |
 |---|---|
 | `data/` | shark records (raw + merged), model dataset, dataset report |
+| `data/climatology/` | typical conditions (`clim_all.nc`) and the 2020-2024 version for the backtest |
+| `data/forecast/` | latest bias-corrected ocean forecast (`forecast.nc`) and its correction (`bias.nc`) |
 | `data/ocean/` | `bathymetry.nc` only; the daily ocean files (~20 GB) are not included - recreate them with `05_get_ocean_data.py` |
-| `models/` | trained models (`*_model.joblib`), comparison (`report.md`, `metrics.csv`), tests (`test_report.md`), plots |
+| `models/` | daily models (`*_model.joblib`), long-range models (`seasonal/`), comparison (`report.md`, `metrics.csv`), tests (`test_report.md`), plots |
 | `maps/` | example habitat maps for 15 Jan 2026 |
 
 The trained models and `data/model_dataset.csv.gz` work without the ocean files; only

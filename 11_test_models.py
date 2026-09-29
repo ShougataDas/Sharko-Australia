@@ -194,15 +194,20 @@ def test_new_records(name, b, sightings):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--species", nargs="+", help="model short names (default: all in models/)")
+    ap.add_argument("--mode", choices=["daily", "seasonal"], default="daily",
+                    help="seasonal: test the long-range models in models/seasonal/")
     args = ap.parse_args()
 
+    if args.mode == "seasonal":
+        MODEL_DIR = os.path.join(MODEL_DIR, "seasonal")
     paths = sorted(glob.glob(os.path.join(MODEL_DIR, "*_model.joblib")))
     if args.species:
         paths = [p for p in paths if os.path.basename(p).replace("_model.joblib", "") in args.species]
     if not paths:
         sys.exit("No models found. Run 09_train_models.py first.")
 
-    data = pd.read_csv(os.path.join(DATA_DIR, "model_dataset.csv.gz"), parse_dates=["date"], low_memory=False)
+    dataset = "model_dataset_seasonal.csv.gz" if args.mode == "seasonal" else "model_dataset.csv.gz"
+    data = pd.read_csv(os.path.join(DATA_DIR, dataset), parse_dates=["date"], low_memory=False)
     sightings = pd.read_csv(os.path.join(DATA_DIR, "sharks_australia.csv"), parse_dates=["date"])
 
     for path in paths:

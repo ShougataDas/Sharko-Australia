@@ -10,3 +10,6 @@ data/ocean/chl_*.nc
 
 # Copernicus credentials
 .copernicusmarine/
+
+# Raw Copernicus forecast downloads (intermediate, one file > 100 MB)
+data/forecast/raw/
