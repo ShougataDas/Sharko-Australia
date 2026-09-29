@@ -1,4 +1,7 @@
-# Sharko Australia: data pipeline
+# Sharko Australia
+
+Predicts shark habitat around Australia (tiger, bull, white and all sharks) from
+satellite ocean data and 2020–2026 shark records.
 
 Downloads fresh (2020 to today) shark records and ocean conditions for Australian waters
 (lon 110–160°E, lat 46–9°S). Settings live in `config.py`.
@@ -23,9 +26,32 @@ python 10_predict_map.py --date 2026-01-15   # habitat maps -> maps/
 python 11_test_models.py                # integrity, biology and unseen-region tests -> models/test_report.md
 ```
 
-All scripts can be re-run safely; the data lands in `data/` (ignored by git).
+All scripts can be re-run safely.
 Typical run times: OBIS ~1 min, GBIF ~15–20 min (slow API), QLD ~1 min, merge seconds,
 bathymetry ~1 min, ocean data depends on size (run `--dry-run` first).
+
+## What's in this repo
+
+| Folder | Contents |
+|---|---|
+| `data/` | shark records (raw + merged), model dataset, dataset report |
+| `data/ocean/` | `bathymetry.nc` only; the daily ocean files (~20 GB) are not included - recreate them with `05_get_ocean_data.py` |
+| `models/` | trained models (`*_model.joblib`), comparison (`report.md`, `metrics.csv`), tests (`test_report.md`), plots |
+| `maps/` | example habitat maps for 15 Jan 2026 |
+
+The trained models and `data/model_dataset.csv.gz` work without the ocean files; only
+`07_build_dataset.py`, `10_predict_map.py` and the new-records test need them.
+
+## Model results
+
+Spatial AUC = tested on 2x2° regions the model never saw (0.5 random, 0.8 good, 0.9 excellent).
+
+| Model | Best algorithm | Spatial AUC | Top drivers |
+|---|---|---|---|
+| Bull shark | LightGBM | 0.93 | depth, sea temperature, distance to coast |
+| All sharks | Random forest | 0.90 | distance to coast, depth, sea level |
+| Tiger shark | LightGBM | 0.89 | depth, distance to coast, sea level, temperature |
+| White shark | LightGBM | 0.81 | sea level, depth, temperature |
 
 ## Data sources
 

@@ -1,0 +1,192 @@
+
+==============================================================================
+1. RAW SHARK DOWNLOADS
+==============================================================================
+
+obis_sharks.csv: 38,629 rows | 98 species | 2020-01-01 -> 2026-07-20 | 0.2% bad dates | 1.1% no species
+  top species: Carcharhinus amblyrhynchos (9650), Heterodontus portusjacksoni (3859), Galeocerdo cuvier (3487), Carcharhinus leucas (3446), Carcharodon carcharias (2090)
+
+gbif_sharks.csv: 40,022 rows | 133 species | 2020-01-01 -> 2026-09-07 | 0.2% bad dates | 1.2% no species
+  top species: Carcharhinus amblyrhynchos (9664), Heterodontus portusjacksoni (4100), Galeocerdo cuvier (3495), Carcharhinus leucas (3454), Carcharodon carcharias (2224)
+
+qld_scp_catches.csv: 4,815 rows | 32 species | 2020-07-04 -> 2026-04-30 | 0.0% bad dates | 0.0% no species
+  top species: Carcharhinus sorrah (877), Galeocerdo cuvier (835), Carcharhinus leucas (728), Carcharhinus amboinensis (658), Nebrius ferrugineus (442)
+
+qld_scp_gear_locations.csv: 410 gear units at 86 beaches
+
+==============================================================================
+2. MERGED SHARK TABLE (data/sharks_australia.csv)
+==============================================================================
+29,230 records | 137 species | 2020-01-01 -> 2026-09-07
+exact duplicates: 0
+
+records per year x source:
+source  GBIF   OBIS  QLD_SCP  total
+date                               
+2020      96   7233      137   7466
+2021      65   7538      349   7952
+2022     170   1248      379   1797
+2023     177   2237      498   2912
+2024     180   1907      820   2907
+2025     100   2395     1852   4347
+2026     347   1021      481   1849
+total   1135  23579     4516  29230
+
+top 10 datasets:
+dataset
+(unknown)                                                                        14893
+iNaturalist research-grade observations                                           8804
+Queensland Shark Control Program                                                  4516
+Great Eggcase Hunt - citizen science observations of chondrichthyian eggcases      664
+CSIRO                                                                              171
+AM                                                                                  62
+Incidental Records A. B. Freeman                                                    56
+The Great Victorian Fish Count                                                      40
+Diveboard - Scuba diving citizen science                                             7
+Individual sighting                                                                  5
+
+==============================================================================
+3. OCEAN DATA FILES (data/ocean)
+==============================================================================
+
+SST: 10 files, 4.5 GB
+           file  days      first       last     grid  analysed_sst min  analysed_sst max  land/NaN %
+ sst_2020_my.nc   366 2020-01-01 2020-12-31 740x1000           280.310           303.190      37.500
+ sst_2021_my.nc   365 2021-01-01 2021-12-31 740x1000           280.800           302.600      37.500
+ sst_2022_my.nc   365 2022-01-01 2022-12-31 740x1000           281.300           303.340      37.500
+ sst_2023_my.nc   365 2023-01-01 2023-12-31 740x1000           280.700           302.640      37.500
+ sst_2024_my.nc   366 2024-01-01 2024-12-31 740x1000           282.260           302.940      37.500
+sst_2024_nrt.nc   350 2024-01-17 2024-12-31 740x1000           282.150           302.390      37.500
+ sst_2025_my.nc   365 2025-01-01 2025-12-31 740x1000           281.460           302.870      37.500
+sst_2025_nrt.nc   365 2025-01-01 2025-12-31 740x1000           281.210           302.810      37.500
+ sst_2026_my.nc    90 2026-01-01 2026-03-31 740x1000           283.220           304.540      37.500
+sst_2026_nrt.nc   269 2026-01-01 2026-09-26 740x1000           281.150           303.160      37.500
+  coverage: 2020-01-01 -> 2026-09-26, 2,461 days, 0 missing days
+  (SST in Kelvin; sst_2020_my.nc mid-year = 7.2 to 30.0 deg C)
+
+SSH: 10 files, 5.3 GB
+           file  days      first       last    grid  sla min  sla max  land/NaN %
+ ssh_2020_my.nc   366 2020-01-01 2020-12-31 296x400   -0.414    0.677      36.900
+ ssh_2021_my.nc   365 2021-01-01 2021-12-31 296x400   -0.394    0.636      36.900
+ ssh_2022_my.nc   365 2022-01-01 2022-12-31 296x400   -0.494    0.628      36.900
+ ssh_2023_my.nc   365 2023-01-01 2023-12-31 296x400   -0.404    0.634      36.900
+ ssh_2024_my.nc   366 2024-01-01 2024-12-31 296x400   -0.616    0.759      36.900
+ssh_2024_nrt.nc   184 2024-07-01 2024-12-31 296x400   -0.436    0.670      36.900
+ ssh_2025_my.nc   365 2025-01-01 2025-12-31 296x400   -0.416    0.628      36.900
+ssh_2025_nrt.nc   365 2025-01-01 2025-12-31 296x400   -0.409    0.642      36.900
+ ssh_2026_my.nc    16 2026-01-01 2026-01-16 296x400   -0.284    0.733      36.900
+ssh_2026_nrt.nc   270 2026-01-01 2026-09-27 296x400   -0.425    0.758      36.900
+  coverage: 2020-01-01 -> 2026-09-27, 2,462 days, 0 missing days
+
+CHL: 8 files, 9.8 GB
+           file  days      first       last     grid  CHL min  CHL max  land/NaN %
+ chl_2020_my.nc   366 2020-01-01 2020-12-31 888x1200    0.018   41.953      37.800
+ chl_2021_my.nc   365 2021-01-01 2021-12-31 888x1200    0.022   49.052      37.800
+ chl_2022_my.nc   365 2022-01-01 2022-12-31 888x1200    0.028   48.152      37.700
+ chl_2023_my.nc   365 2023-01-01 2023-12-31 888x1200    0.010   64.436      37.700
+ chl_2024_my.nc   366 2024-01-01 2024-12-31 888x1200    0.010   65.000      37.700
+ chl_2025_my.nc   365 2025-01-01 2025-12-31 888x1200    0.011   65.000      37.700
+ chl_2026_my.nc   262 2026-01-01 2026-09-19 888x1200    0.014   60.323      37.700
+chl_2026_nrt.nc    17 2026-09-10 2026-09-26 888x1200    0.014   65.000      37.700
+  coverage: 2020-01-01 -> 2026-09-26, 2,461 days, 0 missing days
+
+==============================================================================
+4. BATHYMETRY (data/ocean/bathymetry.nc)
+==============================================================================
+grid 2221x3001 | ocean cells 62.0%
+depth: 1 to 7248 m (median 4071)
+distance to coast: 0 to 1377 km (median 221)
+
+==============================================================================
+5. MODEL DATASET (data/model_dataset.csv.gz)
+==============================================================================
+33,341 rows x 19 columns | 2020-01-01 -> 2026-09-07
+presences 16,540 (49.6%) | background 16,801 (50.4%) | species 137
+
+missing values: none
+duplicate rows: 0
+
+feature ranges (all rows):
+                 min      1%     50%       99%       max  out_of_range
+sst_c          8.380  11.190  23.240    30.350    32.570             0
+sst_front      0.000   0.001   0.018     0.124     0.336             0
+chl_log10     -1.462  -1.270  -0.353     1.009     1.722             0
+sla_m         -0.397  -0.126   0.092     0.356     0.879             0
+adt_m          0.172   0.410   0.903     1.323     1.742             0
+current_ms     0.001   0.016   0.156     0.831     2.779             0
+depth_m        1.000   1.000  10.000  5398.000  7091.000             0
+dist_coast_km  1.643   1.643   4.928   909.489  1350.217             0
+day_sin       -1.000  -0.999   0.045     1.000     1.000             0
+day_cos       -1.000  -1.000   0.091     1.000     1.000             0
+
+sharks vs background (median, and effect size = mean diff / pooled std):
+               shark median  background median  effect size strength
+feature                                                             
+sst_c                23.130             23.420        0.019     tiny
+sst_front             0.018              0.017        0.066     tiny
+chl_log10            -0.177             -0.539        0.676   medium
+sla_m                 0.089              0.095       -0.069     tiny
+adt_m                 0.883              0.926       -0.061     tiny
+current_ms            0.158              0.155       -0.055     tiny
+depth_m               5.000             45.000       -0.655   medium
+dist_coast_km         1.643             12.771       -0.571   medium
+day_sin               0.045              0.045       -0.004     tiny
+day_cos               0.091              0.087        0.002     tiny
+
+highly correlated feature pairs (|r| > 0.8): none
+
+rows per source:
+source
+background_target_group    12605
+OBIS                       12336
+background_uniform          4196
+QLD_SCP                     3256
+GBIF                         948
+
+rows per year (presence vs background):
+presence  background  sharks
+date                        
+2020            3022    2914
+2021            3023    2975
+2022            1424    1465
+2023            2373    2349
+2024            2355    2361
+2025            3063    3045
+2026            1541    1431
+
+sharks per month (seasonality of records):
+date      1     2     3     4     5     6     7     8     9     10    11    12
+sharks  1683  1354  1472  1462  1304  1219  1351  1279  1247  1341  1361  1467
+
+species with >= 300 presences (enough for their own model): 18
+                             records  years  lat_min  lat_max  sst_median  depth_median  coast_km_median
+species                                                                                                 
+Heterodontus portusjacksoni     2222      7    -43.1    -13.8        17.9           3.0              1.6
+Galeocerdo cuvier               1504      7    -36.9    -10.3        25.7           4.5              1.6
+Carcharhinus leucas             1363      7    -36.3    -10.3        25.2           3.0              1.6
+Orectolobus maculatus            913      7    -38.7    -25.9        21.7           5.0              1.6
+Rhincodon typus                  862      6    -37.0     -9.0        29.2        2080.5             48.3
+Carcharodon carcharias           778      7    -42.7    -23.3        19.9           9.0              6.2
+Carcharhinus sorrah              577      7    -25.9    -13.8        27.5           5.0              1.6
+Carcharias taurus                488      7    -37.1    -22.7        21.4           6.5              1.6
+Triaenodon obesus                462      7    -30.2     -9.5        26.3          17.0             20.4
+Carcharhinus amboinensis         461      7    -23.9    -16.7        26.9           3.0              1.6
+Orectolobus halei                440      7    -38.7    -27.1        20.7           5.0              1.6
+Heterodontus galeatus            438      7    -38.3    -28.5        19.9           5.0              1.6
+Nebrius ferrugineus              428      7    -26.6     -9.9        27.6           4.5              1.6
+Carcharhinus limbatus            415      7    -34.1    -10.3        27.1           5.0              1.6
+Carcharhinus melanopterus        397      7    -30.2     -9.7        26.5           4.0              1.6
+Cephaloscyllium laticeps         376      7    -44.0    -37.6        15.0           4.0              1.6
+Brachaelurus waddi               370      7    -35.9    -26.4        21.6           5.0              1.6
+Carcharhinus amblyrhynchos       346      7    -24.1    -10.3        26.6         107.0              6.5
+
+sharks per region (by longitude):
+lon
+East             14194
+Central/North     1362
+West               984
+
+==============================================================================
+SUMMARY
+==============================================================================
+All checks passed - no warnings.
