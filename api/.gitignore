@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+
+# Deployment copy of ../ml made by prepare_deploy.py (the models live in ml/)
+au/

@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+
+# Daily ocean data from Copernicus Marine (~20 GB) - too large for GitHub.
+# Recreate with: copernicusmarine login && python 05_get_ocean_data.py
+data/ocean/sst_*.nc
+data/ocean/ssh_*.nc
+data/ocean/chl_*.nc
+
+# Copernicus credentials
+.copernicusmarine/
+
+# Raw Copernicus forecast downloads (intermediate, one file > 100 MB)
+data/forecast/raw/

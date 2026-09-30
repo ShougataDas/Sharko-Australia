@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+}
+@layer components {
+  /* Hide scrollbar for webkit browsers */
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+
+  .glass-card {
+    @apply bg-slate-800/20 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/20 shadow-2xl;
+  }
+
+  .section-title {
+    @apply text-2xl font-bold text-center mb-6 drop-shadow-lg;
+  }
+
+  .module-card {
+    @apply backdrop-blur-md rounded-xl p-6 border shadow-xl;
+  }
+
+  .module-title {
+    @apply text-xl font-bold text-slate-100 text-center mb-4 drop-shadow-md;
+  }
+
+  .component-list {
+    @apply space-y-2 list-none;
+  }
+
+  .component-list li {
+    @apply bg-slate-700/30 backdrop-blur-sm rounded-lg px-4 py-3 border-l-4 border-slate-500 text-slate-200 font-medium shadow-lg;
+  }
+
+  .highlight {
+    @apply bg-slate-600/30 text-slate-300 px-2 py-1 rounded font-bold;
+  }
+
+  .flow-step {
+    @apply backdrop-blur-md rounded-xl p-5 border text-center shadow-xl;
+  }
+
+  .decision-step {
+    @apply bg-gradient-to-br from-slate-600/30 to-slate-700/30 backdrop-blur-md rounded-xl p-5 border border-slate-500/20 text-center shadow-xl;
+  }
+
+  .stage-card {
+    @apply bg-gradient-to-br from-slate-700/30 to-slate-600/30 backdrop-blur-md rounded-xl p-6 border border-slate-500/20 shadow-xl;
+  }
+
+  .stage-title {
+    @apply text-lg font-bold text-slate-100 text-center mb-4 drop-shadow-md;
+  }
+
+  .stage-list {
+    @apply space-y-3 text-sm text-slate-300 leading-relaxed;
+  }
+
+  .stage-list li {
+    @apply pl-1;
+  }
+
+  .data-packet {
+    @apply bg-slate-700/20 border border-slate-500/30 rounded-lg p-3 font-mono text-xs text-slate-300 backdrop-blur-sm shadow-inner;
+  }
+}

@@ -1,101 +1,158 @@
-# Sharko Australia
+# 🦈 Sharko: predicting shark presence around Australia
 
-Predicts shark habitat around Australia (tiger, bull, white and all sharks) from
-satellite ocean data and 2020–2026 shark records.
+**Live site:** https://sharko-omega.vercel.app/  
+**Live API:** https://midul914-sharko-api.hf.space/
 
-Downloads fresh (2020 to today) shark records and ocean conditions for Australian waters
-(lon 110–160°E, lat 46–9°S). Settings live in `config.py`.
+Sharko predicts **how likely a shark is at any position around Australia on any date**, past,
+next week or years ahead. It learns from 29,000+ real shark sightings (2020-2026) and daily
+satellite measurements of the ocean (temperature, plankton, sea height, currents), then shows
+the predicted hotspots on an interactive map.
 
-## Run order
+Built for the NASA Space Apps Challenge ("Sharks from Space").
 
-```bash
-pip install -r requirements.txt
-python 01_get_sharks_obis.py        # OBIS: IMOS acoustic tracking, iNaturalist, BRUVS...   no account
-python 02_get_sharks_gbif.py        # GBIF / Atlas of Living Australia                       no account
-python 03_get_qld_shark_control.py  # Queensland Shark Control Program catches + gear         no account
-python 04_merge_sharks.py           # -> data/sharks_australia.csv (cleaned, de-duplicated)
-python 06_get_bathymetry.py         # depth + distance to coast (NOAA ETOPO)                  no account
-copernicusmarine login              # free account: https://data.marine.copernicus.eu/register
-python 05_get_ocean_data.py --dry-run   # check download size first
-python 05_get_ocean_data.py             # SST, sea level + currents, chlorophyll (daily)
-python 07_build_dataset.py              # -> data/model_dataset.csv.gz (model-ready, ~4 min)
-python 08_check_dataset.py              # stats + sanity checks -> data/dataset_report.txt
-python 09_train_models.py               # tiger, bull, white: GLM vs RandomForest vs tuned LightGBM (~5 min each)
-python 09_train_models.py --species any # all-sharks model
-python 10_predict_map.py --date 2026-01-15   # habitat maps -> maps/
-python 11_test_models.py                # integrity, biology and unseen-region tests -> models/test_report.md
-# --- future-date prediction ---
-python 12_build_climatology.py          # typical conditions per place + week -> data/climatology/ (~8 min)
-python 13_build_seasonal_dataset.py     # training data on typical conditions
-python 09_train_models.py --mode seasonal --species tiger bull white any   # long-range models -> models/seasonal/
-python 14_backtest_future.py            # honest future test: train to 2024, predict 2025-26 -> models/backtest_report.md
-python 15_get_forecast.py               # Copernicus ocean forecast, next ~9 days (run daily)
-python 16_test_pipeline.py              # end-to-end test of everything -> models/pipeline_test_report.md
-python predictor.py -33.9 151.3 2030-01-15   # shark presence likelihood for any position + date
+---
+
+## How it fits together
+
+```
+ ┌──────────────────────── ml/ (Python) ────────────────────────┐
+ │ OBIS, GBIF, QLD Shark Control  ─┐                            │
+ │ Copernicus satellites (daily) ──┼─> dataset -> models ─┐     │
+ │ NOAA seafloor depth ────────────┘                      │     │
+ │ climatology (typical ocean) + Copernicus forecast ─────┴─> predictor.py
+ └──────────────────────────────────────────────────────────────┘
+                                   │  predict(lat, lon, date)
+                     ┌─────────────▼─────────────┐
+                     │  api/  FastAPI            │  Hugging Face Space
+                     │  /predict/presence        │
+                     │  /predict/habitat         │
+                     │  /predict/location        │
+                     └─────────────┬─────────────┘
+                                   │  GeoJSON / JSON
+                     ┌─────────────▼─────────────┐
+                     │  frontend/  React + Vite  │  Vercel
+                     │  story, map, AI assistant │
+                     └───────────────────────────┘
 ```
 
-All scripts can be re-run safely.
-Typical run times: OBIS ~1 min, GBIF ~15–20 min (slow API), QLD ~1 min, merge seconds,
-bathymetry ~1 min, ocean data depends on size (run `--dry-run` first).
+## Repository structure
 
-## Predicting a future date
+| Folder | What it is | Details |
+|---|---|---|
+| [`ml/`](ml/) | Data download, dataset building, model training, testing and the `predictor.py` used by the API | [ml/README.md](ml/README.md) |
+| [`ml/data/`](ml/data/) | Shark records, model datasets, ocean climatology, latest forecast, seafloor depth | |
+| [`ml/models/`](ml/models/) | Trained models (daily + long-range `seasonal/`), reports, plots, test results | |
+| [`api/`](api/) | FastAPI backend deployed as a Hugging Face Space | [api/README.md](api/README.md) |
+| [`frontend/`](frontend/) | React + TypeScript website deployed on Vercel | [frontend/README.md](frontend/README.md) |
 
-`predictor.py` answers "how likely is a shark at this position on this date?" for any date.
-The 10 model inputs are built according to how far ahead the date is:
+## What the model uses and returns
 
-| Mode | When | Ocean inputs from | Model |
-|---|---|---|---|
-| observed | past date, archive on disk | real satellite data of that day | daily |
-| forecast | next ~9 days | Copernicus ocean forecast, bias-corrected to satellite | daily |
-| outlook | up to 90 days after the last known day | typical conditions + today's unusual part, fading with time | seasonal |
-| typical | further ahead (e.g. 2030) | typical conditions for that place and week (2020-2026) | seasonal |
+**Input:** a position (latitude, longitude) and a date.
 
-Depth, distance to coast and season are always known exactly. Long-range answers include a
-range (cooler / warmer year). Each species is only predicted within 500 km of where it has
-been recorded (2020-2026).
+The model looks at 10 conditions at that place and day:
 
-```python
-from predictor import SharkoPredictor
-p = SharkoPredictor()
-p.predict_point(-33.9, 151.3, "2030-01-15")   # JSON-ready dict per species
-p.predict_grid("2030-01-15")                  # whole-Australia map (0.1 deg)
-```
-
-## What's in this repo
-
-| Folder | Contents |
+| Condition | Source |
 |---|---|
-| `data/` | shark records (raw + merged), model dataset, dataset report |
-| `data/climatology/` | typical conditions (`clim_all.nc`) and the 2020-2024 version for the backtest |
-| `data/forecast/` | latest bias-corrected ocean forecast (`forecast.nc`) and its correction (`bias.nc`) |
-| `data/ocean/` | `bathymetry.nc` only; the daily ocean files (~20 GB) are not included - recreate them with `05_get_ocean_data.py` |
-| `models/` | daily models (`*_model.joblib`), long-range models (`seasonal/`), comparison (`report.md`, `metrics.csv`), tests (`test_report.md`), plots |
-| `maps/` | example habitat maps for 15 Jan 2026 |
+| Sea temperature, temperature fronts | satellite (OSTIA) |
+| Chlorophyll (plankton, start of the food chain) | satellite (GlobColour) |
+| Sea level anomaly, sea height, current speed | satellite altimetry (DUACS) |
+| Depth, distance to coast | NOAA ETOPO seafloor map |
+| Season | the date |
 
-The trained models and `data/model_dataset.csv.gz` work without the ocean files; only
-`07_build_dataset.py`, `10_predict_map.py` and the new-records test need them.
+**Output:** for each species (tiger, bull, great white, any shark) a **presence likelihood from
+0 to 1**, a yes/no "likely habitat", and for long-range dates a range (cooler vs warmer year).
+The API turns the whole-Australia grid into GeoJSON polygons for the map.
 
-## Model results
+### Future dates
 
-Spatial AUC = tested on 2x2° regions the model never saw (0.5 random, 0.8 good, 0.9 excellent).
+Nobody has measured a future ocean, so the conditions are estimated differently depending on
+how far ahead the date is:
 
-| Model | Best algorithm | Spatial AUC | Top drivers |
-|---|---|---|---|
-| Bull shark | LightGBM | 0.93 | depth, sea temperature, distance to coast |
-| All sharks | Random forest | 0.90 | distance to coast, depth, sea level |
-| Tiger shark | LightGBM | 0.89 | depth, distance to coast, sea level, temperature |
-| White shark | LightGBM | 0.81 | sea level, depth, temperature |
+| Mode | When | Ocean conditions from |
+|---|---|---|
+| observed | past dates | real satellite measurements of that day |
+| forecast | next ~9 days | Copernicus ocean forecast, bias-corrected to satellite |
+| outlook | up to 3 months after the last known day | typical conditions + today's unusual conditions, fading with time |
+| typical | further ahead (e.g. 2030) | typical conditions for that place and week (2020-2026 average) |
+
+Each species is only predicted within 500 km of where it has actually been recorded.
+
+## Results
+
+**Tested on regions the model never saw** (spatial cross-validation, AUC: 0.5 = random, 1 = perfect):
+
+| Model | Daily | Long-range (seasonal) |
+|---|---|---|
+| Bull shark | 0.93 | 0.94 |
+| All sharks | 0.90 | 0.90 |
+| Tiger shark | 0.89 | 0.88 |
+| Great white shark | 0.81 | 0.82 |
+
+**Predicting the future** (trained on 2020-2024 only, predicting the real 2025-2026 sightings
+with typical conditions, as the app does for far-future dates):
+
+| Model | AUC | Real sightings caught |
+|---|---|---|
+| Tiger | 0.98 | 99% |
+| Bull | 0.98 | 100% |
+| Great white | 0.93 | 91% |
+| All sharks | 0.95 | 95% |
+
+The future test uses sightings at places already seen in training, so the spatial numbers
+above are the more cautious measure. Full reports:
+[model comparison](ml/models/report.md) ·
+[backtest](ml/models/backtest_report.md) ·
+[model tests](ml/models/test_report.md) ·
+[pipeline tests (28/28 pass)](ml/models/pipeline_test_report.md)
+
+## Quick start
+
+**Ask the model directly (Python):**
+```bash
+cd ml
+pip install -r requirements.txt
+python predictor.py -33.9 151.3 2030-01-15
+```
+
+**Run the API locally** (uses the models in `ml/`):
+```bash
+cd api
+pip install -r requirements.txt
+uvicorn app:app --port 8000
+```
+Then open http://localhost:8000/predict/location?lat=-33.9&lon=151.3&date=2030-01-15
+
+**Run the website locally:**
+```bash
+cd frontend
+npm install
+cp .env.example .env      # add your Mapbox public token
+npm run dev
+```
+
+**Rebuild everything from scratch:** follow the numbered scripts in [ml/README.md](ml/README.md)
+(downloads ~20 GB of satellite data; a free Copernicus Marine account is needed).
 
 ## Data sources
 
-| Data | Source | Resolution |
-|---|---|---|
-| Shark sightings, tags, surveys | OBIS (api.obis.org), GBIF (api.gbif.org) | points |
-| Shark catches at beaches | data.qld.gov.au – Shark Control Program | points (beach) |
-| Sea surface temperature | Copernicus Marine – OSTIA L4 | daily, 0.05° |
-| Sea level anomaly, currents | Copernicus Marine – DUACS L4 | daily, 0.125° |
-| Chlorophyll-a | Copernicus Marine – GlobColour gap-free L4 | daily, 4 km |
-| Depth, distance to coast | NOAA ETOPO 1 arc-minute (ERDDAP) | 1.8 km |
+| Data | Source |
+|---|---|
+| Shark sightings, tagging, camera surveys | [OBIS](https://obis.org), [GBIF / Atlas of Living Australia](https://www.gbif.org) |
+| Shark catches at beaches | [Queensland Shark Control Program](https://www.data.qld.gov.au) |
+| Sea temperature, sea level, currents, chlorophyll, forecasts | [Copernicus Marine Service](https://marine.copernicus.eu) |
+| Seafloor depth | [NOAA ETOPO](https://www.ncei.noaa.gov/products/etopo-global-relief-model) |
 
-Please cite OBIS, GBIF, Queensland Government, Copernicus Marine Service and NOAA
-in your presentation.
+## Limitations
+
+- 86% of sightings come from the east coast, where most divers, tags and drumlines are, so
+  predictions for Western Australia and the north are less certain.
+- More than ~10 days ahead, nobody can predict eddies or storms: long-range answers describe
+  where sharks *usually* are at that time of year.
+- The score is how well the conditions match where the species is usually found, not a
+  guarantee that a shark is there.
+
+## Not in this repository
+
+- The daily satellite archive (~20 GB) - recreate with `ml/05_get_ocean_data.py`.
+- `api/au/` - a copy of the ML files for deployment, made with `api/prepare_deploy.py`.
+- Secrets (`.env` files): see each folder's `.env.example`.

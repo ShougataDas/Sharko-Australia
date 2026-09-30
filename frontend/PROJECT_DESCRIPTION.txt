@@ -1,0 +1,389 @@
+# Shark Tracking and Visualization Project - Complete Technical Documentation
+
+## Project Overview
+This is a React-based web application for predicting and visualizing shark presence and habitat data using interactive 3D maps and immersive storytelling. The project combines machine learning predictions, interactive mapping, and AI-powered assistance to provide insights into shark behavior, hunting patterns, and migration routes. The application features a comprehensive storytelling experience through six video chapters that explain how sharks hunt, navigate, and maintain ocean ecosystems, while the interactive map displays prediction polygons showing where sharks are likely to be found based on environmental factors and species-specific foraging behaviors.
+
+## Core Architecture
+
+### Main Application Structure
+- **Framework**: React 18.2.0 with TypeScript
+- **Build Tool**: Vite 5.0.8
+- **Styling**: Tailwind CSS 4.1.13
+- **Routing**: React Router DOM 7.9.3
+
+### Key Components and Their Functionality
+
+## 1. Mapbox Component (src/components/Mapbox.tsx)
+**Primary mapping interface for shark data visualization**
+
+### Libraries Used:
+- **mapbox-gl**: Core mapping library for interactive maps
+- **lucide-react**: Icon components (ChevronRight, MessageCircle)
+- **react-router-dom**: Navigation (Link component)
+
+### Functionality:
+- Interactive map with satellite imagery
+- **Shark Presence Predictions**: Red polygons showing predicted locations where sharks could be present
+- **Shark Habitat Predictions**: Green polygons showing predicted foraging habitats based on shark species
+- Date-based data filtering (day, month, year selection)
+- Shark species selection with detailed information panels
+- Custom markers with click-to-fly animations
+- API integration for data fetching (localhost:8000/predict/)
+
+### Data Flow:
+1. User selects date and shark species
+2. Component fetches prediction data from backend API
+3. GeoJSON prediction data is processed and rendered as colored polygons on map
+4. Interactive markers allow detailed exploration of predicted hotspots
+5. Real-time updates when parameters change
+6. **Prediction Accuracy**: Data shows where sharks are likely to be based on environmental factors, ocean currents, and food availability
+
+## 2. AI Assistant Component (src/components/AIAssistant.tsx)
+**AI-powered chat interface for data insights**
+
+### Libraries Used:
+- **lucide-react**: Icons (Send, X, Bot, User)
+
+### Functionality:
+- Glassmorphism design with green primary color theme
+- 5-message limit per conversation
+- Real-time typing indicators
+- Contextual AI responses about shark data
+- Auto-scroll and message timestamps
+- Modal overlay integration
+
+### AI Response System:
+- Predefined responses about shark behavior patterns
+- Habitat analysis and migration insights
+- Environmental factor explanations
+- Data clustering observations
+
+## 3. Sensor Component (src/components/Sensor.tsx)
+**Interactive sensor data visualization with glassmorphism design**
+
+### Libraries Used:
+- **gsap**: Animation library for scroll-triggered animations
+- **lucide-react**: Various icons for UI elements
+
+### Functionality:
+- Multi-stage sensor data visualization
+- Glassmorphism card design with distinct color variants
+- ScrollTrigger animations for reveal effects
+- Interactive data flow representation
+- Responsive design with hover effects
+
+### Animation System:
+- ScrollTrigger for scroll-based animations
+- Left-to-right, right-to-left reveal animations
+- Fade-in/out effects on scroll
+- Color-coded stages with glass effects
+
+## 4. DataFlow Component (src/components/DataFlow.tsx)
+**Animated data flow diagram with SVG line drawing**
+
+### Libraries Used:
+- **gsap**: Core animation library
+- **gsap/ScrollTrigger**: Scroll-based animation triggers
+- **gsap/MotionPathPlugin**: Path-based animations
+
+### Functionality:
+- SVG line drawing animations
+- Circle movement along paths
+- Progressive stroke drawing synchronized with circle movement
+- Scroll-triggered animations
+- Custom stroke dash animations
+
+### Animation Techniques:
+- strokeDasharray and strokeDashoffset manipulation
+- MotionPath animations for circle movement
+- onUpdate callbacks for synchronized effects
+- ScrollTrigger integration for viewport-based triggers
+
+## 5. Video Hero Components (VideoHero.tsx, VideoHeroTwo.tsx, etc.)
+**Video-based storytelling components that explain shark behavior and hunting patterns**
+
+### Libraries Used:
+- **gsap**: Animation library for character-by-character text reveals
+- **lucide-react**: Icon components for navigation
+
+### Functionality:
+- Video background integration with underwater footage
+- Character-by-character text animation reveals
+- Interactive storytelling with navigation between chapters
+- Multi-part content with tabbed interfaces
+- Responsive video layouts with glassmorphism overlays
+
+### Storytelling Content:
+
+#### VideoHero.tsx - "Meet Sharko: A Guardian of the Ocean"
+- **Introduction**: Establishes sharks as vital ocean guardians, not mindless hunters
+- **Message**: Sharks maintain the delicate balance of marine life
+- **Purpose**: Sets the narrative foundation for understanding shark importance
+
+#### VideoHeroTwo.tsx - "Clue #1: The Invisible Map"
+- **Navigation Systems**: Explains how sharks use ancient GPS systems millions of years old
+- **Ocean Currents**: Describes invisible underwater rivers (hot and cold currents)
+- **Satellite Technology**: Shows how scientists use super-powered satellites to decode ancient pathways
+- **Key Insight**: Predicting shark location is the first step to understanding behavior without seeing the shark itself
+
+#### VideoHeroThree.tsx - "The Journey Begins - A Predictable Path"
+- **Movement Patterns**: Explains how sharks move with purpose through the ocean
+- **DNA Blueprint**: Describes how every turn and dive follows an ancient blueprint in their DNA
+- **Technology Integration**: Shows how technology allows us to peek into their master plan
+- **Live Statistics**: Displays real-time data like current speed (12 km/h)
+
+#### VideoHeroFour.tsx - "Clue #2: The Scent of Life"
+- **Phytoplankton Blooms**: Explains green blooms as the foundation of the ocean food web
+- **Food Chain**: Describes the connection: Phytoplankton → Fish → Seals → Sharks
+- **Hunting Strategy**: Shows how sharks follow the scent trail of this ancient dance
+- **Ocean Food Web**: Details the invisible chain of life that drives every ocean movement
+
+#### VideoHeroFive.tsx - "The Hunt Revealed"
+- **Part 1 - Predicted Hotspot**: Confirms data accuracy - warm currents and phytoplankton create perfect hunting grounds
+- **Part 2 - Why Her Hunt Matters**: Explains apex predator role in ecosystem health
+- **Ecosystem Balance**: Details how sharks remove sick/weak prey, prevent disease spread, and prevent species overpopulation
+- **Conservation Message**: "A healthy ocean needs sharks"
+
+#### VideoHeroSix.tsx - "From Prediction to Protection"
+- **Real-World Applications**: Shows how data changes the world through human decisions
+- **Three User Groups**:
+  - **Fishermen**: Use hotspot maps to avoid high shark activity, reducing bycatch and saving gear
+  - **Conservationists**: Use data to establish Marine Protected Areas (MPAs) for critical habitats
+  - **Public Safety**: Coastal managers issue accurate beach advisories for swimmer safety
+- **Global Impact**: Demonstrates how improved predictions create safer oceans for everyone
+
+## 6. 3D Earth Components (Earth.tsx, Scene.tsx, etc.)
+**Three.js-based 3D Earth visualization**
+
+### Libraries Used:
+- **@react-three/fiber**: React Three.js integration
+- **@react-three/drei**: Three.js helpers and utilities
+- **three**: Core Three.js library
+- **gsap**: Animation library
+
+### Functionality:
+- 3D Earth rendering with textures
+- Cloud layer animations
+- Star field background
+- Camera controls and lighting
+- Interactive 3D elements
+
+## 7. HeatMap Components (HeatMap.tsx, HeatMapUI.tsx)
+**Data visualization for heat mapping**
+
+### Libraries Used:
+- **@turf/turf**: Geospatial analysis library
+- **lucide-react**: UI icons
+
+### Functionality:
+- GeoJSON data processing
+- Heat map generation
+- Interactive data filtering
+- Color-coded intensity mapping
+- Clustering algorithms
+
+## 8. Utility Functions
+
+### geoJsonLoader.ts
+**GeoJSON data processing utilities**
+
+### Libraries Used:
+- **@turf/turf**: Geospatial calculations
+
+### Functionality:
+- GeoJSON feature processing
+- Center point calculations
+- Camera distance optimization
+- Data clustering and aggregation
+
+### clustering.ts
+**Data clustering algorithms**
+
+### Functionality:
+- K-means clustering
+- Density-based clustering
+- Spatial data aggregation
+- Performance optimization
+
+### coordinates.ts
+**Coordinate system utilities**
+
+### Functionality:
+- Coordinate transformations
+- Projection handling
+- Distance calculations
+- Bounding box operations
+
+## Data Flow Architecture
+
+### 1. Data Input
+- User selects date and shark species
+- API calls to localhost:8000/predict/ endpoints
+- GeoJSON data retrieval and processing
+
+### 2. Data Processing
+- GeoJSON features processed through utility functions
+- Clustering algorithms applied for performance
+- Coordinate transformations and projections
+
+### 3. Visualization
+- Mapbox GL JS renders interactive maps
+- Custom markers and overlays
+- Real-time data updates
+- 3D visualizations with Three.js
+
+### 4. User Interaction
+- Click handlers for map interactions
+- Scroll-triggered animations
+- AI assistant integration
+- Responsive design adaptations
+
+## Animation System
+
+### GSAP Integration
+- **ScrollTrigger**: Scroll-based animations
+- **MotionPathPlugin**: Path-based animations
+- **Timeline**: Complex animation sequences
+- **Easing**: Custom animation curves
+
+### Animation Types:
+1. **Scroll Animations**: Reveal effects on scroll
+2. **Path Animations**: Circle movement along SVG paths
+3. **Stroke Animations**: Progressive line drawing
+4. **3D Animations**: Earth rotation and camera movements
+5. **UI Animations**: Hover effects and transitions
+
+## State Management
+
+### React Hooks Usage:
+- **useState**: Component state management
+- **useEffect**: Side effects and lifecycle management
+- **useRef**: DOM references and persistent values
+- **useMemo**: Performance optimization
+- **useCallback**: Function memoization
+
+### State Flow:
+1. User interactions trigger state updates
+2. State changes trigger re-renders
+3. useEffect hooks handle side effects
+4. Data flows from parent to child components
+
+## Performance Optimizations
+
+### 1. Data Processing
+- Clustering algorithms for large datasets
+- Memoization with useMemo
+- Efficient GeoJSON processing
+- Lazy loading of components
+
+### 2. Rendering
+- Virtual scrolling for large lists
+- Canvas-based rendering for maps
+- WebGL acceleration for 3D graphics
+- Efficient re-render strategies
+
+### 3. Memory Management
+- Proper cleanup in useEffect
+- Event listener removal
+- Map instance management
+- WebAssembly memory optimization
+
+## API Integration
+
+### Backend Endpoints:
+- **GET /predict/presence**: Shark presence data
+- **GET /predict/habitat**: Habitat suitability data
+- **GET /sharks.json**: Shark species information
+
+### Data Format:
+- GeoJSON for spatial data
+- JSON for metadata
+- Real-time data updates
+- Error handling and loading states
+
+## UI/UX Design System
+
+### Design Principles:
+- **Glassmorphism**: Frosted glass effects
+- **Green Primary Color**: Consistent color scheme
+- **Responsive Design**: Mobile-first approach
+- **Accessibility**: Keyboard navigation and screen readers
+
+### Component Patterns:
+- **Modal Overlays**: AI Assistant, Shark Picker
+- **Card Components**: Information display
+- **Button Variants**: Primary, secondary, icon buttons
+- **Input Components**: Date pickers, text inputs
+
+## Error Handling
+
+### Error Types:
+1. **API Errors**: Network failures, server errors
+2. **Data Errors**: Invalid GeoJSON, missing properties
+3. **Rendering Errors**: Map initialization failures
+4. **User Errors**: Invalid input validation
+
+### Error Recovery:
+- Retry mechanisms for API calls
+- Fallback UI components
+- User-friendly error messages
+- Graceful degradation
+
+## Security Considerations
+
+### Data Protection:
+- API token management
+- Input validation and sanitization
+- XSS prevention
+- CSRF protection
+
+### Performance Security:
+- Memory leak prevention
+- Resource cleanup
+- Rate limiting
+- Input size limits
+
+## Deployment Considerations
+
+### Build Process:
+- TypeScript compilation
+- Vite bundling
+- Asset optimization
+- Environment configuration
+
+### Production Optimizations:
+- Code splitting
+- Tree shaking
+- Asset compression
+- CDN integration
+
+## Future Enhancements
+
+### Planned Features:
+1. **Real-time Data Streaming**: WebSocket integration
+2. **Advanced Analytics**: Machine learning insights
+3. **Mobile App**: React Native version
+4. **Offline Support**: Service worker integration
+5. **Multi-language Support**: Internationalization
+
+### Technical Improvements:
+1. **Performance**: Web Workers for data processing
+2. **Accessibility**: Enhanced screen reader support
+3. **Testing**: Comprehensive test coverage
+4. **Documentation**: API documentation generation
+
+## Development Workflow
+
+### Code Organization:
+- **Components**: Reusable UI components
+- **Utils**: Utility functions and helpers
+- **Types**: TypeScript type definitions
+- **Assets**: Static resources and media
+
+### Best Practices:
+- **TypeScript**: Strict type checking
+- **ESLint**: Code quality enforcement
+- **Prettier**: Code formatting
+- **Git**: Version control and collaboration
+
+This project represents a comprehensive solution for shark data visualization, combining modern web technologies with advanced data processing capabilities to provide an intuitive and informative user experience.
