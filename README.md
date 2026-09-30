@@ -50,25 +50,22 @@ python ml/predictor.py -33.9 151.3 2030-01-15      # latitude  longitude  date
 ## 🧠 How it works
 
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph DATA["📥 Data"]
+        direction LR
         A["🦈 29,230 shark records<br/>OBIS · GBIF · QLD Shark Control"]
         B["🛰️ Daily satellite ocean<br/>Copernicus Marine"]
         C["🗺️ Seafloor depth<br/>NOAA ETOPO"]
     end
-    subgraph ML["🧪 ml/ (Python)"]
-        D["Training dataset<br/>33,341 rows"]
-        E["Models<br/>LightGBM · Random Forest"]
-        F["predictor.py<br/>any place + any date"]
+    subgraph ML["🧪 ml/ · Python"]
+        direction LR
+        D["Training dataset<br/>33,341 rows"] --> E["Models<br/>LightGBM · Random Forest"] --> F["predictor.py<br/>any place + any date"]
     end
     subgraph APP["🌐 Apps"]
-        G["api/ · FastAPI<br/>Hugging Face"]
-        H["frontend/ · React<br/>Vercel"]
+        direction LR
+        G["api/ · FastAPI<br/>Hugging Face"] -->|GeoJSON| H["frontend/ · React<br/>Vercel"]
     end
-    A --> D
-    B --> D
-    C --> D
-    D --> E --> F --> G -->|GeoJSON| H
+    DATA --> ML --> APP
 ```
 
 ### What goes in, what comes out
