@@ -1,14 +1,12 @@
 # 🦈 Sharko: predicting shark presence around Australia
 
 **Live site:** https://sharko-omega.vercel.app/  
-**Live API:** https://midul914-sharko-api.hf.space/
 
 Sharko predicts **how likely a shark is at any position around Australia on any date**, past,
 next week or years ahead. It learns from 29,000+ real shark sightings (2020-2026) and daily
 satellite measurements of the ocean (temperature, plankton, sea height, currents), then shows
 the predicted hotspots on an interactive map.
 
-Built for the NASA Space Apps Challenge ("Sharks from Space").
 
 ---
 
